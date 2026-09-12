@@ -33,14 +33,23 @@ class Harness:
         self.memory = memory
 
     @classmethod
-    def local(cls, documents: list[Document] | None = None, memory_path: Path | None = None) -> "Harness":
+    def local(
+        cls,
+        documents: list[Document] | None = None,
+        memory_path: Path | None = None,
+        bm25_k1: float = 1.5,
+        bm25_b: float = 0.75,
+        verifier_min_overlap: int = 1,
+    ) -> "Harness":
+        """Build a harness from documents plus the parameters the meta-loop searches
+        over (docs/META_RSI.md). Defaults are the hand-written baseline config."""
         from search_rsi.benchmarks_corpus import load_default_corpus
 
         docs = documents if documents is not None else load_default_corpus()
         return cls(
-            index=BM25Index(docs),
+            index=BM25Index(docs, k1=bm25_k1, b=bm25_b),
             planner=RuleBasedPlanner(),
-            verifier=OverlapVerifier(),
+            verifier=OverlapVerifier(min_overlap=verifier_min_overlap),
             memory=MemoryStore(memory_path or DEFAULT_MEMORY_PATH),
         )
 

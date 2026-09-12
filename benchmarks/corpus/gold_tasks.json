@@ -22,5 +22,29 @@
     "tool_budget": 4,
     "task_type": "lookup",
     "domain": "policy"
+  },
+  {
+    "question": "Meridian Framework redefinition of latency budget per-service allowance",
+    "gold_doc_ids": ["doc_02", "doc_03"],
+    "gold_answer": "doc_02",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "networking"
+  },
+  {
+    "question": "Azoren Bank coral survey data reuse climate model calibration",
+    "gold_doc_ids": ["doc_04", "doc_05"],
+    "gold_answer": "doc_04",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "ecology"
+  },
+  {
+    "question": "Kessler Compact groundwater extraction limits absent from Doventry Accord",
+    "gold_doc_ids": ["doc_09", "doc_10"],
+    "gold_answer": "doc_10",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "policy"
   }
 ]

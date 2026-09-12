@@ -12,6 +12,9 @@ applied to multi-hop question answering and information discovery.
   layout, first executable slice, and the benchmark that must exist before claiming
   success.
 - `docs/ARCHITECTURE.md` — the run loop and memory contract in more detail.
+- `docs/META_RSI.md` — the meta layer: a loop that evolves the harness's own
+  parameters/code (not just task strategies), with its own guardrails, frozen
+  train/meta-val/held-out split, archive, and a random-search ablation arm.
 
 ## North star claim
 
@@ -53,8 +56,21 @@ Run the offline contract tests with `python -m pytest`. Everything above execute
 BM25 retrieval over the committed corpus and real exact-match grading — no mocked
 retrieval, no simulated scores (see `plan.md` §2, C1-C2).
 
+## Meta layer: RSI for RSI
+
+`experiments/run_meta_ablation.py` runs a second, outer loop that evolves the
+harness's own hyperparameters (BM25's `k1`/`b`, the verifier's overlap threshold)
+across meta-iterations, gated against a frozen `meta_val` task split, with an archive
+of accepted variants and a random-search control arm. See `docs/META_RSI.md` for the
+guardrails (closed mutation surface, frozen 3-way split, Pareto-aware acceptance,
+meta-level ablation) and the current honest result (a ceiling effect at this
+benchmark's small size — no headroom to show a win yet, documented rather than
+hidden).
+
 ## Status
 
 Scaffold stage: control-plane contract (Task/TaskResult/Harness/Memory) and the local
-BM25 + rule-based-planner slice. LLM-backed planning, dense retrieval, and the
-N-task ablation benchmark are the next milestones (see `plan.md` §5).
+BM25 + rule-based-planner slice, plus a first meta-loop slice over numeric
+hyperparameters. LLM-backed planning, dense retrieval, a benchmark corpus large
+enough to break the current ceiling effect, and code-level meta-mutation are the next
+milestones (see `plan.md` §5, `docs/META_RSI.md` "Milestone 2").
