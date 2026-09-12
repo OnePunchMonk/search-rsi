@@ -5,7 +5,7 @@ from pathlib import Path
 from search_rsi.agents import OverlapVerifier, RuleBasedPlanner
 from search_rsi.eval import exact_match_score
 from search_rsi.memory import MemoryEntry, MemoryStore
-from search_rsi.retrieval import BM25Index
+from search_rsi.retrieval import Retriever, build_retriever
 from search_rsi.retrieval.bm25 import tokenize
 from search_rsi.types import Document, Task, TaskResult, ToolCall
 
@@ -22,7 +22,7 @@ class Harness:
 
     def __init__(
         self,
-        index: BM25Index,
+        index: Retriever,
         planner: RuleBasedPlanner,
         verifier: OverlapVerifier,
         memory: MemoryStore,
@@ -37,17 +37,21 @@ class Harness:
         cls,
         documents: list[Document] | None = None,
         memory_path: Path | None = None,
+        retriever: str = "bm25",
         bm25_k1: float = 1.5,
         bm25_b: float = 0.75,
         verifier_min_overlap: int = 1,
+        use_hyde: bool = False,
     ) -> "Harness":
-        """Build a harness from documents plus the parameters the meta-loop searches
-        over (docs/META_RSI.md). Defaults are the hand-written baseline config."""
+        """Build a harness from documents plus the parameters *and the retrieval
+        algorithm* the meta-loop searches over (docs/META_RSI.md) — algorithm choice
+        is part of the mutation surface, not a fixed implementation detail. Defaults
+        are the hand-written baseline config."""
         from search_rsi.benchmarks_corpus import load_default_corpus
 
         docs = documents if documents is not None else load_default_corpus()
         return cls(
-            index=BM25Index(docs, k1=bm25_k1, b=bm25_b),
+            index=build_retriever(retriever, docs, bm25_k1=bm25_k1, bm25_b=bm25_b, use_hyde=use_hyde),
             planner=RuleBasedPlanner(),
             verifier=OverlapVerifier(min_overlap=verifier_min_overlap),
             memory=MemoryStore(memory_path or DEFAULT_MEMORY_PATH),

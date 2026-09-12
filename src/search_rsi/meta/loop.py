@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from search_rsi.meta.archive import Archive, ArchiveEntry
 from search_rsi.meta.config import BASELINE, HarnessConfig
 from search_rsi.meta.evaluate import evaluate_variant
 from search_rsi.meta.mutate import propose_mutation, propose_random_config
 from search_rsi.types import Task
+
+
+def _significance_floor(tasks: list[Task]) -> float:
+    """A candidate must improve mean score by at least half of one task's worth of
+    swing to be accepted. Without this, a single task flipping from wrong to right
+    on a small meta-val split looks like a real win when it's within the noise of
+    re-running the same config (docs/META_RSI.md "Current status")."""
+    return 0.5 / len(tasks)
 
 
 @dataclass(frozen=True)
@@ -17,6 +25,7 @@ class MetaLoopResult:
     baseline_score: float
     n_accepted: int
     n_proposed: int
+    archive: Archive = field(compare=False, repr=False)
 
 
 def run_meta_loop(
@@ -34,6 +43,7 @@ def run_meta_loop(
     experiments/run_meta_ablation.py for the full control arm (evolved vs. random).
     """
     rng = random.Random(seed)
+    min_improvement = _significance_floor(meta_val_tasks)
     baseline_score = evaluate_variant(BASELINE, meta_val_tasks).mean_score
     archive = Archive(ArchiveEntry(BASELINE, evaluate_variant(BASELINE, meta_val_tasks)))
 
@@ -42,7 +52,7 @@ def run_meta_loop(
         parent = archive.sample_parent(rng) if use_archive else archive.champion().config
         candidate_config = propose_mutation(parent, rng)
         candidate_score = evaluate_variant(candidate_config, meta_val_tasks)
-        if archive.maybe_accept(ArchiveEntry(candidate_config, candidate_score)):
+        if archive.maybe_accept(ArchiveEntry(candidate_config, candidate_score), min_improvement):
             n_accepted += 1
 
     champ = archive.champion()
@@ -52,6 +62,7 @@ def run_meta_loop(
         baseline_score=baseline_score,
         n_accepted=n_accepted,
         n_proposed=iterations,
+        archive=archive,
     )
 
 
@@ -63,6 +74,7 @@ def run_random_search_control(
     the evolved arm doesn't beat this, the search isn't doing anything the config
     space wasn't already going to hand you for free."""
     rng = random.Random(seed)
+    min_improvement = _significance_floor(meta_val_tasks)
     baseline_score = evaluate_variant(BASELINE, meta_val_tasks).mean_score
     archive = Archive(ArchiveEntry(BASELINE, evaluate_variant(BASELINE, meta_val_tasks)))
 
@@ -70,7 +82,7 @@ def run_random_search_control(
     for _ in range(iterations):
         candidate_config = propose_random_config(rng)
         candidate_score = evaluate_variant(candidate_config, meta_val_tasks)
-        if archive.maybe_accept(ArchiveEntry(candidate_config, candidate_score)):
+        if archive.maybe_accept(ArchiveEntry(candidate_config, candidate_score), min_improvement):
             n_accepted += 1
 
     champ = archive.champion()
@@ -80,4 +92,5 @@ def run_random_search_control(
         baseline_score=baseline_score,
         n_accepted=n_accepted,
         n_proposed=iterations,
+        archive=archive,
     )

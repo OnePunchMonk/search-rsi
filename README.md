@@ -58,19 +58,31 @@ retrieval, no simulated scores (see `plan.md` §2, C1-C2).
 
 ## Meta layer: RSI for RSI
 
-`experiments/run_meta_ablation.py` runs a second, outer loop that evolves the
-harness's own hyperparameters (BM25's `k1`/`b`, the verifier's overlap threshold)
-across meta-iterations, gated against a frozen `meta_val` task split, with an archive
-of accepted variants and a random-search control arm. See `docs/META_RSI.md` for the
-guardrails (closed mutation surface, frozen 3-way split, Pareto-aware acceptance,
-meta-level ablation) and the current honest result (a ceiling effect at this
-benchmark's small size — no headroom to show a win yet, documented rather than
-hidden).
+`experiments/run_meta_ablation.py` runs a second, outer loop that searches over the
+harness's own **retrieval algorithm** (BM25 / Jaccard overlap / TF-IDF cosine — three
+different scoring mechanisms, not one algorithm's knobs), BM25's hyperparameters,
+the verifier's overlap threshold, and whether generative query expansion (a HyDE-
+style stand-in) runs — gated against a frozen `meta_val` task split, with an archive
+of accepted variants and a random-search control arm. `experiments/find_production_config.py`
+closes the loop end to end: it re-scores the search's Pareto-optimal candidates
+(score vs. latency) on held-out eval and exports the winner as a `config.json` +
+`serve.py` a production process can load and call directly — "describe a search
+problem, get the best-scoring lowest-latency config, deploy it."
+
+See `docs/META_RSI.md` for the guardrails (closed mutation surface, frozen 3-way
+split, Pareto-aware acceptance, meta-level ablation) and the current honest result:
+the benchmark corpus was rebuilt to have real headroom (decoy documents, length
+variation), and the latest run caught a genuine small case of meta-overfitting — an
+evolved config that tied the baseline on `meta_val` but scored slightly lower on
+`held_out_eval` — exactly what the frozen split exists to catch, reported rather
+than hidden.
 
 ## Status
 
-Scaffold stage: control-plane contract (Task/TaskResult/Harness/Memory) and the local
-BM25 + rule-based-planner slice, plus a first meta-loop slice over numeric
-hyperparameters. LLM-backed planning, dense retrieval, a benchmark corpus large
-enough to break the current ceiling effect, and code-level meta-mutation are the next
-milestones (see `plan.md` §5, `docs/META_RSI.md` "Milestone 2").
+Scaffold stage: control-plane contract (Task/TaskResult/Harness/Memory), three real
+retrieval algorithms plus generative query expansion, and a meta-loop that searches
+over algorithm choice + hyperparameters + generative technique, gated by a frozen
+train/meta-val/held-out split, with Pareto selection and a production-export step.
+LLM-backed planning, a real embedding-based dense retriever, code-level meta-
+mutation, and resolving the current near-tie meta-overfitting case are the next
+milestones (see `plan.md` §5, `docs/META_RSI.md` "Current status", "Milestone 2").

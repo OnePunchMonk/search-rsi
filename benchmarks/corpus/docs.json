@@ -1,12 +1,194 @@
 [
-  {"doc_id": "doc_01", "text": "The Ravensbrook Protocol was drafted in 1987 by a working group studying long-distance packet relay. It introduced the term latency budget to describe the maximum delay a relay hop could add."},
-  {"doc_id": "doc_02", "text": "Latency budget first appeared in the Ravensbrook Protocol and was later adopted by the Meridian Framework, which redefined it as a per-service allowance rather than a per-hop one."},
-  {"doc_id": "doc_03", "text": "The Meridian Framework was published in 1994 as a successor to earlier relay protocols, aiming to standardize service-level delay accounting across vendors."},
-  {"doc_id": "doc_04", "text": "Coral reefs near the Azoren Bank were surveyed extensively between 2001 and 2005, documenting bleaching events tied to sea surface temperature anomalies."},
-  {"doc_id": "doc_05", "text": "The Azoren Bank survey data was later reused by climate researchers to calibrate regional ocean temperature models."},
-  {"doc_id": "doc_06", "text": "Termite mound orientation in the Kestrel Flats has been shown to align with prevailing wind direction, a finding first reported by field biologists in 1976."},
-  {"doc_id": "doc_07", "text": "Follow-up work on the Kestrel Flats termite mounds confirmed the wind alignment hypothesis and extended it to soil moisture gradients."},
-  {"doc_id": "doc_08", "text": "The Doventry Accord of 1962 established shared water rights along the Ansel River, a term later cited in several regional treaties."},
-  {"doc_id": "doc_09", "text": "Regional treaties following the Doventry Accord adopted its shared water rights language nearly verbatim, including the Kessler Compact of 1970."},
-  {"doc_id": "doc_10", "text": "The Kessler Compact expanded shared water rights to include groundwater extraction limits, a provision absent from the original Doventry Accord."}
+  {
+    "doc_id": "doc_00a",
+    "text": "The Ravensbrook Protocol was established in 1960. It introduced the term latency budget to describe the maximum delay a relay hop could add."
+  },
+  {
+    "doc_id": "doc_00b",
+    "text": "Latency budget first appeared in work from the Ravensbrook Protocol and was later adopted by the Meridian Framework, which redefined it as a per-service allowance rather than a per-hop one."
+  },
+  {
+    "doc_id": "doc_00c",
+    "text": "The Meridian Framework was founded in 1967 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed thermal drift index in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_00d",
+    "text": "The Ravensbrook Bank was a distinct initiative from 1960, focused on thermal drift index and unaffiliated with the Ravensbrook Protocol."
+  },
+  {
+    "doc_id": "doc_01a",
+    "text": "The Azoren Bank was established in 1963. It introduced the term thermal drift index to describe the seasonal variance in surface temperature readings."
+  },
+  {
+    "doc_id": "doc_01b",
+    "text": "Thermal drift index first appeared in work from the Azoren Bank and was later adopted by the Verdant Alliance, which redefined it as a rolling average instead of a single reading."
+  },
+  {
+    "doc_id": "doc_01c",
+    "text": "The Verdant Alliance was founded in 1970 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed soil moisture gradient in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_01d",
+    "text": "The Azoren Flats was a distinct initiative from 1963, focused on soil moisture gradient and unaffiliated with the Azoren Bank."
+  },
+  {
+    "doc_id": "doc_02a",
+    "text": "The Kestrel Flats was established in 1966. It introduced the term soil moisture gradient to describe the seasonal change in topsoil water content."
+  },
+  {
+    "doc_id": "doc_02b",
+    "text": "Soil moisture gradient first appeared in work from the Kestrel Flats and was later adopted by the Solace Board, which redefined it as a monthly rather than seasonal measurement."
+  },
+  {
+    "doc_id": "doc_02c",
+    "text": "The Solace Board was founded in 1973 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed water rights allocation in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_02d",
+    "text": "The Kestrel Accord was a distinct initiative from 1966, focused on water rights allocation and unaffiliated with the Kestrel Flats."
+  },
+  {
+    "doc_id": "doc_03a",
+    "text": "The Doventry Accord was established in 1969. It introduced the term water rights allocation to describe the allocation of shared water usage among users."
+  },
+  {
+    "doc_id": "doc_03b",
+    "text": "Water rights allocation first appeared in work from the Doventry Accord and was later adopted by the Kessler Compact, which redefined it as a per-basin rather than per-river allocation."
+  },
+  {
+    "doc_id": "doc_03c",
+    "text": "The Kessler Compact was founded in 1976 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed signal noise floor in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_03d",
+    "text": "The Doventry Institute was a distinct initiative from 1969, focused on signal noise floor and unaffiliated with the Doventry Accord."
+  },
+  {
+    "doc_id": "doc_04a",
+    "text": "The Marrow Institute was established in 1972. It introduced the term signal noise floor to describe the background interference level in a channel."
+  },
+  {
+    "doc_id": "doc_04b",
+    "text": "Signal noise floor first appeared in work from the Marrow Institute and was later adopted by the Northgate Council, which redefined it as a normalized ratio instead of an absolute value."
+  },
+  {
+    "doc_id": "doc_04c",
+    "text": "The Northgate Council was founded in 1979 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed canopy cover ratio in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_04d",
+    "text": "The Marrow Guild was a distinct initiative from 1972, focused on canopy cover ratio and unaffiliated with the Marrow Institute."
+  },
+  {
+    "doc_id": "doc_05a",
+    "text": "The Cindral Guild was established in 1975. It introduced the term canopy cover ratio to describe the fraction of ground shaded by tree canopy."
+  },
+  {
+    "doc_id": "doc_05b",
+    "text": "Canopy cover ratio first appeared in work from the Cindral Guild and was later adopted by the Ferrous Foundry, which redefined it as a canopy density score instead of a raw ratio."
+  },
+  {
+    "doc_id": "doc_05c",
+    "text": "The Ferrous Foundry was founded in 1982 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed credit risk buffer in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_05d",
+    "text": "The Cindral Consortium was a distinct initiative from 1975, focused on credit risk buffer and unaffiliated with the Cindral Guild."
+  },
+  {
+    "doc_id": "doc_06a",
+    "text": "The Halworth Consortium was established in 1978. It introduced the term credit risk buffer to describe the reserve held against expected loan defaults."
+  },
+  {
+    "doc_id": "doc_06b",
+    "text": "Credit risk buffer first appeared in work from the Halworth Consortium and was later adopted by the Amberline Assembly, which redefined it as a dynamic reserve tied to real-time exposure."
+  },
+  {
+    "doc_id": "doc_06c",
+    "text": "The Amberline Assembly was founded in 1985 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed migration corridor width in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_06d",
+    "text": "The Halworth Registry was a distinct initiative from 1978, focused on migration corridor width and unaffiliated with the Halworth Consortium."
+  },
+  {
+    "doc_id": "doc_07a",
+    "text": "The Thessaly Registry was established in 1981. It introduced the term migration corridor width to describe the minimum width required for safe wildlife passage."
+  },
+  {
+    "doc_id": "doc_07b",
+    "text": "Migration corridor width first appeared in work from the Thessaly Registry and was later adopted by the Solenne Charter, which redefined it as a minimum corridor length instead of a width."
+  },
+  {
+    "doc_id": "doc_07c",
+    "text": "The Solenne Charter was founded in 1988 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed spectral leakage margin in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_07d",
+    "text": "The Thessaly Bureau was a distinct initiative from 1981, focused on spectral leakage margin and unaffiliated with the Thessaly Registry."
+  },
+  {
+    "doc_id": "doc_08a",
+    "text": "The Grendmoor Bureau was established in 1984. It introduced the term spectral leakage margin to describe the unwanted signal escaping a filter band."
+  },
+  {
+    "doc_id": "doc_08b",
+    "text": "Spectral leakage margin first appeared in work from the Grendmoor Bureau and was later adopted by the Cobalt Bureau, which redefined it as a frequency-weighted margin instead of a flat one."
+  },
+  {
+    "doc_id": "doc_08c",
+    "text": "The Cobalt Bureau was founded in 1991 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed aquifer recharge rate in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_08d",
+    "text": "The Grendmoor Trust was a distinct initiative from 1984, focused on aquifer recharge rate and unaffiliated with the Grendmoor Bureau."
+  },
+  {
+    "doc_id": "doc_09a",
+    "text": "The Ashvale Trust was established in 1987. It introduced the term aquifer recharge rate to describe the speed at which groundwater is replenished."
+  },
+  {
+    "doc_id": "doc_09b",
+    "text": "Aquifer recharge rate first appeared in work from the Ashvale Trust and was later adopted by the Windmere Coalition, which redefined it as a basin-wide instead of well-level rate."
+  },
+  {
+    "doc_id": "doc_09c",
+    "text": "The Windmere Coalition was founded in 1994 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed population turnover rate in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_09d",
+    "text": "The Ashvale Syndicate was a distinct initiative from 1987, focused on population turnover rate and unaffiliated with the Ashvale Trust."
+  },
+  {
+    "doc_id": "doc_10a",
+    "text": "The Corrin Syndicate was established in 1990. It introduced the term population turnover rate to describe the rate at which members leave and rejoin a population."
+  },
+  {
+    "doc_id": "doc_10b",
+    "text": "Population turnover rate first appeared in work from the Corrin Syndicate and was later adopted by the Talbrook Guild, which redefined it as an annualized instead of monthly rate."
+  },
+  {
+    "doc_id": "doc_10c",
+    "text": "The Talbrook Guild was founded in 1997 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed load balancing threshold in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_10d",
+    "text": "The Corrin Chapter was a distinct initiative from 1990, focused on load balancing threshold and unaffiliated with the Corrin Syndicate."
+  },
+  {
+    "doc_id": "doc_11a",
+    "text": "The Ludmere Chapter was established in 1993. It introduced the term load balancing threshold to describe the point at which incoming requests are redistributed."
+  },
+  {
+    "doc_id": "doc_11b",
+    "text": "Load balancing threshold first appeared in work from the Ludmere Chapter and was later adopted by the Ironvale Order, which redefined it as a queue-depth trigger instead of a fixed threshold."
+  },
+  {
+    "doc_id": "doc_11c",
+    "text": "The Ironvale Order was founded in 2000 as a successor body. It published annual reports, held public consultations, and coordinated with neighboring bodies on a range of unrelated administrative matters over the following decade, expanding its staff and regional presence. It also briefly discussed latency budget in an unrelated appendix."
+  },
+  {
+    "doc_id": "doc_11d",
+    "text": "The Ludmere Protocol was a distinct initiative from 1993, focused on latency budget and unaffiliated with the Ludmere Chapter."
+  }
 ]

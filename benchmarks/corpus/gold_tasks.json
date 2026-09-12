@@ -1,50 +1,266 @@
 [
   {
-    "question": "term latency budget origin protocol",
-    "gold_doc_ids": ["doc_01", "doc_02"],
-    "gold_answer": "doc_01",
+    "question": "origin of the term latency budget which organization introduced it",
+    "gold_doc_ids": [
+      "doc_00a",
+      "doc_00b"
+    ],
+    "gold_answer": "doc_00a",
     "tool_budget": 4,
     "task_type": "lookup",
     "domain": "networking"
   },
   {
-    "question": "termite mound wind alignment original finding and follow-up soil moisture",
-    "gold_doc_ids": ["doc_06", "doc_07"],
-    "gold_answer": "doc_06",
-    "tool_budget": 4,
-    "task_type": "multihop",
-    "domain": "ecology"
-  },
-  {
-    "question": "shared water rights term origin treaty",
-    "gold_doc_ids": ["doc_08", "doc_09"],
-    "gold_answer": "doc_08",
-    "tool_budget": 4,
-    "task_type": "lookup",
-    "domain": "policy"
-  },
-  {
-    "question": "Meridian Framework redefinition of latency budget per-service allowance",
-    "gold_doc_ids": ["doc_02", "doc_03"],
-    "gold_answer": "doc_02",
+    "question": "latency budget redefinition by successor organization Meridian Framework",
+    "gold_doc_ids": [
+      "doc_00a",
+      "doc_00b"
+    ],
+    "gold_answer": "doc_00b",
     "tool_budget": 4,
     "task_type": "multihop",
     "domain": "networking"
   },
   {
-    "question": "Azoren Bank coral survey data reuse climate model calibration",
-    "gold_doc_ids": ["doc_04", "doc_05"],
-    "gold_answer": "doc_04",
+    "question": "origin of the term thermal drift index which organization introduced it",
+    "gold_doc_ids": [
+      "doc_01a",
+      "doc_01b"
+    ],
+    "gold_answer": "doc_01a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "ecology"
+  },
+  {
+    "question": "thermal drift index redefinition by successor organization Verdant Alliance",
+    "gold_doc_ids": [
+      "doc_01a",
+      "doc_01b"
+    ],
+    "gold_answer": "doc_01b",
     "tool_budget": 4,
     "task_type": "multihop",
     "domain": "ecology"
   },
   {
-    "question": "Kessler Compact groundwater extraction limits absent from Doventry Accord",
-    "gold_doc_ids": ["doc_09", "doc_10"],
-    "gold_answer": "doc_10",
+    "question": "origin of the term soil moisture gradient which organization introduced it",
+    "gold_doc_ids": [
+      "doc_02a",
+      "doc_02b"
+    ],
+    "gold_answer": "doc_02a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "policy"
+  },
+  {
+    "question": "soil moisture gradient redefinition by successor organization Solace Board",
+    "gold_doc_ids": [
+      "doc_02a",
+      "doc_02b"
+    ],
+    "gold_answer": "doc_02b",
     "tool_budget": 4,
     "task_type": "multihop",
     "domain": "policy"
+  },
+  {
+    "question": "origin of the term water rights allocation which organization introduced it",
+    "gold_doc_ids": [
+      "doc_03a",
+      "doc_03b"
+    ],
+    "gold_answer": "doc_03a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "genetics"
+  },
+  {
+    "question": "water rights allocation redefinition by successor organization Kessler Compact",
+    "gold_doc_ids": [
+      "doc_03a",
+      "doc_03b"
+    ],
+    "gold_answer": "doc_03b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "genetics"
+  },
+  {
+    "question": "origin of the term signal noise floor which organization introduced it",
+    "gold_doc_ids": [
+      "doc_04a",
+      "doc_04b"
+    ],
+    "gold_answer": "doc_04a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "networking"
+  },
+  {
+    "question": "signal noise floor redefinition by successor organization Northgate Council",
+    "gold_doc_ids": [
+      "doc_04a",
+      "doc_04b"
+    ],
+    "gold_answer": "doc_04b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "networking"
+  },
+  {
+    "question": "origin of the term canopy cover ratio which organization introduced it",
+    "gold_doc_ids": [
+      "doc_05a",
+      "doc_05b"
+    ],
+    "gold_answer": "doc_05a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "ecology"
+  },
+  {
+    "question": "canopy cover ratio redefinition by successor organization Ferrous Foundry",
+    "gold_doc_ids": [
+      "doc_05a",
+      "doc_05b"
+    ],
+    "gold_answer": "doc_05b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "ecology"
+  },
+  {
+    "question": "origin of the term credit risk buffer which organization introduced it",
+    "gold_doc_ids": [
+      "doc_06a",
+      "doc_06b"
+    ],
+    "gold_answer": "doc_06a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "policy"
+  },
+  {
+    "question": "credit risk buffer redefinition by successor organization Amberline Assembly",
+    "gold_doc_ids": [
+      "doc_06a",
+      "doc_06b"
+    ],
+    "gold_answer": "doc_06b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "policy"
+  },
+  {
+    "question": "origin of the term migration corridor width which organization introduced it",
+    "gold_doc_ids": [
+      "doc_07a",
+      "doc_07b"
+    ],
+    "gold_answer": "doc_07a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "genetics"
+  },
+  {
+    "question": "migration corridor width redefinition by successor organization Solenne Charter",
+    "gold_doc_ids": [
+      "doc_07a",
+      "doc_07b"
+    ],
+    "gold_answer": "doc_07b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "genetics"
+  },
+  {
+    "question": "origin of the term spectral leakage margin which organization introduced it",
+    "gold_doc_ids": [
+      "doc_08a",
+      "doc_08b"
+    ],
+    "gold_answer": "doc_08a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "networking"
+  },
+  {
+    "question": "spectral leakage margin redefinition by successor organization Cobalt Bureau",
+    "gold_doc_ids": [
+      "doc_08a",
+      "doc_08b"
+    ],
+    "gold_answer": "doc_08b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "networking"
+  },
+  {
+    "question": "origin of the term aquifer recharge rate which organization introduced it",
+    "gold_doc_ids": [
+      "doc_09a",
+      "doc_09b"
+    ],
+    "gold_answer": "doc_09a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "ecology"
+  },
+  {
+    "question": "aquifer recharge rate redefinition by successor organization Windmere Coalition",
+    "gold_doc_ids": [
+      "doc_09a",
+      "doc_09b"
+    ],
+    "gold_answer": "doc_09b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "ecology"
+  },
+  {
+    "question": "origin of the term population turnover rate which organization introduced it",
+    "gold_doc_ids": [
+      "doc_10a",
+      "doc_10b"
+    ],
+    "gold_answer": "doc_10a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "policy"
+  },
+  {
+    "question": "population turnover rate redefinition by successor organization Talbrook Guild",
+    "gold_doc_ids": [
+      "doc_10a",
+      "doc_10b"
+    ],
+    "gold_answer": "doc_10b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "policy"
+  },
+  {
+    "question": "origin of the term load balancing threshold which organization introduced it",
+    "gold_doc_ids": [
+      "doc_11a",
+      "doc_11b"
+    ],
+    "gold_answer": "doc_11a",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "genetics"
+  },
+  {
+    "question": "load balancing threshold redefinition by successor organization Ironvale Order",
+    "gold_doc_ids": [
+      "doc_11a",
+      "doc_11b"
+    ],
+    "gold_answer": "doc_11b",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "genetics"
   }
 ]

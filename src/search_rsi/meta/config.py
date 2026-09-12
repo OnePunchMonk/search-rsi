@@ -13,12 +13,18 @@ class HarnessConfig:
     mutation can reach it (docs/META_RSI.md, Guardrail 1).
     """
 
+    retriever: str = "bm25"
     bm25_k1: float = 1.5
     bm25_b: float = 0.75
     verifier_min_overlap: int = 1
+    use_hyde: bool = False
 
     def label(self) -> str:
-        return f"k1={self.bm25_k1:.2f},b={self.bm25_b:.2f},min_overlap={self.verifier_min_overlap}"
+        params = f"min_overlap={self.verifier_min_overlap}"
+        if self.retriever == "bm25":
+            params = f"k1={self.bm25_k1:.2f},b={self.bm25_b:.2f},{params}"
+        hyde = "+hyde" if self.use_hyde else ""
+        return f"{self.retriever}{hyde}[{params}]"
 
 
 BASELINE = HarnessConfig()
