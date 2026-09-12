@@ -1,0 +1,12 @@
+[
+  {"doc_id": "doc_01", "text": "The Ravensbrook Protocol was drafted in 1987 by a working group studying long-distance packet relay. It introduced the term latency budget to describe the maximum delay a relay hop could add."},
+  {"doc_id": "doc_02", "text": "Latency budget first appeared in the Ravensbrook Protocol and was later adopted by the Meridian Framework, which redefined it as a per-service allowance rather than a per-hop one."},
+  {"doc_id": "doc_03", "text": "The Meridian Framework was published in 1994 as a successor to earlier relay protocols, aiming to standardize service-level delay accounting across vendors."},
+  {"doc_id": "doc_04", "text": "Coral reefs near the Azoren Bank were surveyed extensively between 2001 and 2005, documenting bleaching events tied to sea surface temperature anomalies."},
+  {"doc_id": "doc_05", "text": "The Azoren Bank survey data was later reused by climate researchers to calibrate regional ocean temperature models."},
+  {"doc_id": "doc_06", "text": "Termite mound orientation in the Kestrel Flats has been shown to align with prevailing wind direction, a finding first reported by field biologists in 1976."},
+  {"doc_id": "doc_07", "text": "Follow-up work on the Kestrel Flats termite mounds confirmed the wind alignment hypothesis and extended it to soil moisture gradients."},
+  {"doc_id": "doc_08", "text": "The Doventry Accord of 1962 established shared water rights along the Ansel River, a term later cited in several regional treaties."},
+  {"doc_id": "doc_09", "text": "Regional treaties following the Doventry Accord adopted its shared water rights language nearly verbatim, including the Kessler Compact of 1970."},
+  {"doc_id": "doc_10", "text": "The Kessler Compact expanded shared water rights to include groundwater extraction limits, a provision absent from the original Doventry Accord."}
+]

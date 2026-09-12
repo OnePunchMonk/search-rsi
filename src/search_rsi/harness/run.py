@@ -1,0 +1,79 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from search_rsi.agents import OverlapVerifier, RuleBasedPlanner
+from search_rsi.eval import exact_match_score
+from search_rsi.memory import MemoryEntry, MemoryStore
+from search_rsi.retrieval import BM25Index
+from search_rsi.retrieval.bm25 import tokenize
+from search_rsi.types import Document, Task, TaskResult, ToolCall
+
+DEFAULT_MEMORY_PATH = Path(__file__).resolve().parents[3] / "memory" / "store" / "entries.json"
+
+
+class Harness:
+    """The plan -> retrieve -> verify -> answer -> score -> memory-write run loop.
+
+    Owns the tool-call budget (plan.md C5) and the memory on/off ablation switch
+    (plan.md C6). Held-out eval tasks must call run(..., is_training_task=False) so
+    they never write memory (plan.md C4).
+    """
+
+    def __init__(
+        self,
+        index: BM25Index,
+        planner: RuleBasedPlanner,
+        verifier: OverlapVerifier,
+        memory: MemoryStore,
+    ):
+        self.index = index
+        self.planner = planner
+        self.verifier = verifier
+        self.memory = memory
+
+    @classmethod
+    def local(cls, documents: list[Document] | None = None, memory_path: Path | None = None) -> "Harness":
+        from search_rsi.benchmarks_corpus import load_default_corpus
+
+        docs = documents if documents is not None else load_default_corpus()
+        return cls(
+            index=BM25Index(docs),
+            planner=RuleBasedPlanner(),
+            verifier=OverlapVerifier(),
+            memory=MemoryStore(memory_path or DEFAULT_MEMORY_PATH),
+        )
+
+    def run(self, task: Task, memory_enabled: bool = True, is_training_task: bool = True) -> TaskResult:
+        memory_entries = self.memory.read(task.task_type, task.domain) if memory_enabled else []
+        queries = self.planner.plan_queries(task, memory_entries)
+
+        tool_calls: list[ToolCall] = []
+        question_terms = set(tokenize(task.question))
+        supported_doc_ids: list[str] = []
+
+        for query in queries:
+            if len(tool_calls) >= task.tool_budget:
+                break
+            hits = self.index.search(query, top_k=3)
+            result_doc_ids = [doc_id for doc_id, _ in hits]
+            tool_calls.append(ToolCall(kind="bm25_search", query=query, result_doc_ids=result_doc_ids))
+            for doc_id in result_doc_ids:
+                doc_text = next(d.text for d in self.index.documents if d.doc_id == doc_id)
+                if self.verifier.supports(question_terms, doc_text) and doc_id not in supported_doc_ids:
+                    supported_doc_ids.append(doc_id)
+
+        answer = supported_doc_ids[0] if supported_doc_ids else ""
+        score = exact_match_score(task, answer, supported_doc_ids)
+
+        if memory_enabled and is_training_task and score < 1.0 and len(queries) == 1:
+            self.memory.write(
+                MemoryEntry(
+                    task_type=task.task_type,
+                    domain=task.domain,
+                    strategy="decompose multi-part questions into sub-queries before retrieval",
+                    evidence=f"single-query plan scored {score:.2f} on: {task.question!r}",
+                )
+            )
+
+        return TaskResult(answer=answer, citations=supported_doc_ids, tool_calls=tool_calls, score=score)

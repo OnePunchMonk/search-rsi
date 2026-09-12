@@ -1,0 +1,26 @@
+[
+  {
+    "question": "term latency budget origin protocol",
+    "gold_doc_ids": ["doc_01", "doc_02"],
+    "gold_answer": "doc_01",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "networking"
+  },
+  {
+    "question": "termite mound wind alignment original finding and follow-up soil moisture",
+    "gold_doc_ids": ["doc_06", "doc_07"],
+    "gold_answer": "doc_06",
+    "tool_budget": 4,
+    "task_type": "multihop",
+    "domain": "ecology"
+  },
+  {
+    "question": "shared water rights term origin treaty",
+    "gold_doc_ids": ["doc_08", "doc_09"],
+    "gold_answer": "doc_08",
+    "tool_budget": 4,
+    "task_type": "lookup",
+    "domain": "policy"
+  }
+]
