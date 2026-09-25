@@ -147,3 +147,24 @@ Run the same ordered sequence of N tasks twice: once with `memory_enabled=True`,
 with `memory_enabled=False`, same model/tools/budget. Plot metric-per-task and
 tool-calls-per-task for both arms. The claim in §1 holds only if the memory arm's curve
 improves over the sequence and separates from the flat/no-improvement ablation curve.
+
+---
+
+## 8. v2: from one benchmark to the search use-case suite
+
+The slice above proved the contract on one multi-hop corpus. v2 generalizes it to
+"everything search":
+
+- **Problems, not a corpus**: `SearchProblem` (docs + graded qrels + frozen split)
+  with six built-in use cases (product, code, FAQ, entity/typo, news/freshness, the
+  original multi-hop set as a control) and a BEIR loader for real datasets.
+- **Standard IR metrics** as the executed score (nDCG@10, MRR@10, success@1).
+- **A full pipeline as the mutable surface**: analyzers, five retrievers, RRF
+  fusion, spell correction, PRF, structured filters, rerank, recency.
+- **Memory that actually learns**: query-rewrite rules mined from failed training
+  queries with promotion, probation and demotion (replacing the single hard-coded
+  "decompose" strategy for this stack).
+- **Three RSI levels, each with a control arm**: memory on/off, evolution vs.
+  random search, cross-problem transfer vs. baseline.
+
+Status and numbers: `reports/benchmark.md`; design: `docs/USE_CASES.md`.

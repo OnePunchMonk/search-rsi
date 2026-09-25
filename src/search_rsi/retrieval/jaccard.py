@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from search_rsi.retrieval.bm25 import tokenize
+import heapq
+from collections import defaultdict
+from typing import Callable
+
+from search_rsi.text import tokenize
 from search_rsi.types import Document
 
 
@@ -16,19 +20,29 @@ class JaccardIndex:
     assumption (docs/META_RSI.md).
     """
 
-    def __init__(self, documents: list[Document]):
+    def __init__(
+        self,
+        documents: list[Document],
+        analyzer: Callable[[str], list[str]] = tokenize,
+        texts: list[str] | None = None,
+    ):
         self.documents = documents
-        self._doc_terms = [set(tokenize(d.text)) for d in documents]
+        self.analyzer = analyzer
+        texts = texts if texts is not None else [d.text for d in documents]
+        self._doc_sizes: list[int] = []
+        self._postings: dict[str, list[int]] = defaultdict(list)
+        for i, text in enumerate(texts):
+            terms = set(analyzer(text))
+            self._doc_sizes.append(len(terms))
+            for term in terms:
+                self._postings[term].append(i)
 
     def search(self, query: str, top_k: int = 5) -> list[tuple[str, float]]:
-        q_terms = set(tokenize(query))
-        scores: list[tuple[str, float]] = []
-        for doc, terms in zip(self.documents, self._doc_terms):
-            union = q_terms | terms
-            if not union:
-                continue
-            score = len(q_terms & terms) / len(union)
-            if score > 0:
-                scores.append((doc.doc_id, score))
-        scores.sort(key=lambda x: x[1], reverse=True)
-        return scores[:top_k]
+        q_terms = set(self.analyzer(query))
+        overlap: dict[int, int] = defaultdict(int)
+        for term in q_terms:
+            for i in self._postings.get(term, ()):
+                overlap[i] += 1
+        scores = {i: n / (len(q_terms) + self._doc_sizes[i] - n) for i, n in overlap.items()}
+        best = heapq.nsmallest(top_k, scores.items(), key=lambda kv: (-kv[1], kv[0]))
+        return [(self.documents[i].doc_id, s) for i, s in best if s > 0]

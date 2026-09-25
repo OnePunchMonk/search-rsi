@@ -7,6 +7,16 @@ from dataclasses import dataclass, field
 class Document:
     doc_id: str
     text: str
+    title: str = ""
+    # Structured fields (price, brand, date, ...) that filters and boosts read.
+    metadata: dict = field(default_factory=dict, compare=False, hash=False)
+
+    def indexed_text(self, title_boost: int = 0) -> str:
+        """Title repeated `1 + title_boost` times ahead of the body — a BM25F-lite
+        field weighting that works with any single-field scorer."""
+        if not self.title:
+            return self.text
+        return " ".join([self.title] * (1 + title_boost) + [self.text])
 
 
 @dataclass(frozen=True)

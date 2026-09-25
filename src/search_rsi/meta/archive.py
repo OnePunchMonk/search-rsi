@@ -71,16 +71,21 @@ class Archive:
         their split (docs/META_RSI.md "Current status" — this was 0.0 in the v1
         slice, which is why a single lucky task could get accepted).
         """
-        champ = self.champion()
-        better_score = candidate.score.mean_score > champ.score.mean_score + min_improvement
-        tied_score_cheaper = (
-            candidate.score.mean_score >= champ.score.mean_score - 1e-9
-            and (
-                candidate.score.mean_tool_calls < champ.score.mean_tool_calls
-                or candidate.score.mean_latency_ms < champ.score.mean_latency_ms * 0.9
-            )
-        )
-        if better_score or tied_score_cheaper:
+        if self.passes_gate(candidate, self.champion(), min_improvement):
             self.entries.append(candidate)
             return True
         return False
+
+    @staticmethod
+    def passes_gate(candidate: ArchiveEntry, incumbent: ArchiveEntry, min_improvement: float) -> bool:
+        """The Pareto acceptance rule on its own, so loops that track their
+        champion explicitly (search_rsi.rsi.optimize) apply exactly the same gate."""
+        better_score = candidate.score.mean_score > incumbent.score.mean_score + min_improvement
+        tied_score_cheaper = (
+            candidate.score.mean_score >= incumbent.score.mean_score - 1e-9
+            and (
+                candidate.score.mean_tool_calls < incumbent.score.mean_tool_calls
+                or candidate.score.mean_latency_ms < incumbent.score.mean_latency_ms * 0.9
+            )
+        )
+        return better_score or tied_score_cheaper
