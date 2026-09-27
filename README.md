@@ -1,88 +1,121 @@
 # search-rsi
 
-A harness for **search and discovery agents** where recursive self-improvement (RSI) is
-carried entirely by persisted, structured cross-run memory — not by fine-tuning any
-model. Sibling of `ouroboros-cv` (vision) and `deliberative_ai` (NLP): same contract
-(one executed score, real data end to end, memory-vs-ablation as a first-class run mode),
-applied to multi-hop question answering and information discovery.
+**Recursive self-improvement for search.** Give it a search problem (a corpus plus
+judged queries) and it works out which pipeline fits: analyzer, retriever, hybrid
+fusion, query rewriting, filters, reranking, recency. It learns query rewrites from
+its own failures and carries what worked over to similar problems. Nothing is
+fine-tuned. Every improvement is an inspectable artifact that can be re-verified: a
+rewrite rule, a pipeline config, a problem profile.
 
-**The product is the harness, not any single answer it produces.**
+```
+$ search-rsi search product_search 'red sneakers under $90'        # baseline BM25
+  4.0191  p043   Corvid Core 9 Rain Jacket - Grey                    # wrong category
+$ search-rsi learn product_search                                  # learn from train queries
+  sneakers -> shoe mesh    trainers -> running    rucksack -> backpack   ...
+$ search-rsi search product_search 'red sneakers under $90' \
+    --config '{"use_learned_rewrites": true, "filter_mode": "soft"}'
+  constraints: price_max=90, color=red
+  6.4244  p015   Fjell Flex 6 Running Shoes - Red
+$ search-rsi optimize code_search --export deploy/code             # evolve the whole pipeline
+  held-out mrr@10: baseline 0.480 -> champion 0.786
+```
 
-- `plan.md` — the build plan: design constraints carried over from the sibling projects,
-  layout, first executable slice, and the benchmark that must exist before claiming
-  success.
-- `docs/ARCHITECTURE.md` — the run loop and memory contract in more detail.
-- `docs/META_RSI.md` — the meta layer: a loop that evolves the harness's own
-  parameters/code (not just task strategies), with its own guardrails, frozen
-  train/meta-val/held-out split, archive, and a random-search ablation arm.
+## Search use cases
 
-## North star claim
+Six built-in problems, each isolating one way a default search box fails. Any
+BEIR-format dataset (SciFact, FiQA, NFCorpus, your own logs) loads by path.
 
-> Given N discovery tasks solved in sequence, task N reaches the target answer-quality
-> metric using fewer tool calls than task 1 did on a difficulty-matched task — and beats
-> an ablated harness with identical compute and tools but no cross-run memory.
+| problem | what breaks the default |
+|---|---|
+| `product_search` | "sneakers" vs. "running shoes"; "under $80" is a constraint, not text |
+| `code_search` | `parseCfgFile` is one opaque token; code abbreviates what people spell out |
+| `faq_support` | paraphrase, stopword-heavy phrasing, near-duplicate articles |
+| `entity_lookup` | typos in rare names; near-duplicate names punish fuzzy matching |
+| `news_freshness` | "latest X" needs a recency prior, and "X 2019" must not get one |
+| `multihop_provenance` | control: the baseline is already near ceiling |
+
+See **[docs/USE_CASES.md](docs/USE_CASES.md)** for the full matrix, the pipeline
+stages, how to add a use case, and the roadmap (conversational, cross-lingual,
+autocomplete, geo, enterprise, agentic research).
+
+## Three levels of self-improvement
+
+1. **Experience memory** (`rsi/learn.py`): query-rewrite rules mined from failed
+   *training* queries. A rule is promoted only if replaying earlier queries shows no
+   regression. After that it stays on probation, and is narrowed or demoted if it
+   starts to hurt.
+2. **Pipeline evolution** (`rsi/optimize.py`): a DGM-style archive search over the
+   whole pipeline config. It is gated on a frozen meta_val split and always runs
+   next to a random-search control with the same budget. Rules are re-learned for
+   each candidate pipeline, so memory and pipeline co-adapt.
+3. **Cross-problem transfer** (`rsi/transfer.py`): each champion is stored with a
+   profile of its problem's shape, and warm-starts new problems that look like it.
+
+## Results (held-out eval, 3 seeds, 40 evaluations per arm)
+
+| problem | metric | baseline | + memory | evolved | random search |
+|---|---|---|---|---|---|
+| product_search | nDCG@10 | 0.609 | 0.822 | 0.894 ± 0.030 | 0.905 ± 0.011 |
+| code_search | MRR@10 | 0.480 | 0.613 | 0.858 ± 0.015 | 0.863 ± 0.072 |
+| faq_support | nDCG@10 | 0.425 | 0.582 | 0.666 ± 0.021 | 0.666 ± 0.026 |
+| entity_lookup | success@1 | 0.419 | 0.419 | 1.000 ± 0.000 | 0.989 ± 0.015 |
+| news_freshness | nDCG@10 | 0.572 | 0.572 | 0.871 ± 0.183 | 1.000 ± 0.000 |
+| multihop_provenance | nDCG@10 | 0.986 | 0.986 | 0.986 ± 0.000 | 0.986 ± 0.000 |
+
+What this shows, and what it doesn't. Full report: [reports/benchmark.md](reports/benchmark.md).
+
+- **Per-use-case pipeline search works.** Both search arms beat the hand-set
+  baseline by large margins wherever there is headroom, and they find no
+  spurious gain on the control problem.
+- **Learned memory generalizes.** Rules learned on train lift *held-out* queries
+  by 0.13–0.21 where there is a vocabulary gap. With rewrites removed from the
+  evolved champion, product search falls from 0.894 to 0.674.
+- **Evolution does not beat random search yet.** At this budget they are
+  statistically tied, and on one seed evolution never found the recency stage for
+  news. The meta-level ablation exists to catch exactly this, so no claim that
+  "the evolved search earns its keep" is made.
+- **Transfer is thin with 6 problems.** It helps when a similar problem exists and
+  gives little when none does.
+
+## Quick start
+
+```bash
+pip install -e ".[dev]"          # pure Python, no dependencies; [dense] adds sentence-transformers
+python -m pytest                 # 41 tests, ~3s, fully offline
+search-rsi problems
+search-rsi optimize code_search --export deploy/code
+python deploy/code/serve.py corpus.jsonl "how to download an http request"
+search-rsi optimize path/to/beir/scifact     # any BEIR-format directory
+search-rsi bench --out reports/              # full benchmark, ~4 min
+```
+
+The exported directory (`config.json`, `rewrites.json`, `manifest.json`, `serve.py`)
+is the deliverable: a pipeline plus its learned memory, loadable by a service, with
+held-out numbers recorded in the manifest.
+
+## Guardrails (from the original design: plan.md, docs/META_RSI.md)
+
+- **One executed score** per problem, computed against real judgments.
+  `eval/metrics.py` is unreachable from the mutation surface.
+- **Frozen three-way split.** Train feeds memory, meta_val gates every accept/reject
+  decision, and held-out eval is only reported. Tests check that the optimizer never
+  reads held-out and that evaluation never writes memory.
+- **Every RSI level has a control arm**: memory on vs. off, evolution vs. random
+  search, transfer vs. baseline.
+- **Offline and deterministic**: real retrieval over real text, with no mocks and no
+  network. A dense embedder is an optional plug-in
+  (`retrieval.set_embedder(sentence_transformers_embedder())`).
 
 ## Layout
 
-- `src/search_rsi/harness/` — plan → retrieve → verify → answer → score → memory-write
-  run loop; owns the tool-call budget.
-- `src/search_rsi/agents/` — planner (query decomposition) and verifier
-  (citation-support check).
-- `src/search_rsi/retrieval/` — BM25 and (later) dense retrieval over a real local
-  corpus.
-- `src/search_rsi/memory/` — persisted strategy store, read/write/promote.
-- `src/search_rsi/eval/` — grading, held-out benchmark runner, memory-on-vs-off ablation
-  report.
-- `benchmarks/corpus/` — small real corpus + gold task set for dev and held-out eval.
-
-## First executable slice
-
-```python
-from search_rsi import Harness, Task
-
-harness = Harness.local()  # BM25 retriever + rule-based planner, no network calls
-task = Task(
-    question="Which document introduces the term first used by the follow-up doc?",
-    gold_doc_ids=["doc_02", "doc_07"],
-    gold_answer="doc_02",
-    tool_budget=6,
-)
-
-result = harness.run(task, memory_enabled=True, is_training_task=True)
-print(result.answer, result.score, result.tool_calls_used)
-```
-
-Run the offline contract tests with `python -m pytest`. Everything above executes real
-BM25 retrieval over the committed corpus and real exact-match grading — no mocked
-retrieval, no simulated scores (see `plan.md` §2, C1-C2).
-
-## Meta layer: RSI for RSI
-
-`experiments/run_meta_ablation.py` runs a second, outer loop that searches over the
-harness's own **retrieval algorithm** (BM25 / Jaccard overlap / TF-IDF cosine — three
-different scoring mechanisms, not one algorithm's knobs), BM25's hyperparameters,
-the verifier's overlap threshold, and whether generative query expansion (a HyDE-
-style stand-in) runs — gated against a frozen `meta_val` task split, with an archive
-of accepted variants and a random-search control arm. `experiments/find_production_config.py`
-closes the loop end to end: it re-scores the search's Pareto-optimal candidates
-(score vs. latency) on held-out eval and exports the winner as a `config.json` +
-`serve.py` a production process can load and call directly — "describe a search
-problem, get the best-scoring lowest-latency config, deploy it."
-
-See `docs/META_RSI.md` for the guardrails (closed mutation surface, frozen 3-way
-split, Pareto-aware acceptance, meta-level ablation) and the current honest result:
-the benchmark corpus was rebuilt to have real headroom (decoy documents, length
-variation), and the latest run caught a genuine small case of meta-overfitting — an
-evolved config that tied the baseline on `meta_val` but scored slightly lower on
-`held_out_eval` — exactly what the frozen split exists to catch, reported rather
-than hidden.
-
-## Status
-
-Scaffold stage: control-plane contract (Task/TaskResult/Harness/Memory), three real
-retrieval algorithms plus generative query expansion, and a meta-loop that searches
-over algorithm choice + hyperparameters + generative technique, gated by a frozen
-train/meta-val/held-out split, with Pareto selection and a production-export step.
-LLM-backed planning, a real embedding-based dense retriever, code-level meta-
-mutation, and resolving the current near-tie meta-overfitting case are the next
-milestones (see `plan.md` §5, `docs/META_RSI.md` "Current status", "Milestone 2").
+- `src/search_rsi/problems/`: use-case generators, `SearchProblem`, BEIR loader
+- `src/search_rsi/pipeline/`: `PipelineConfig`, `SearchPipeline`, query understanding
+- `src/search_rsi/retrieval/`: BM25, TF-IDF, Jaccard, char-trigram, dense, RRF fusion
+- `src/search_rsi/text.py`: analyzers (plain, stem, stem+stopwords, code identifiers)
+- `src/search_rsi/eval/metrics.py`: the fixed grader
+- `src/search_rsi/rsi/`: learn, optimize, transfer, export, bench
+- `src/search_rsi/cli.py`: the `search-rsi` command
+- `src/search_rsi/harness/`, `agents/`, `meta/`: the original agentic multi-hop
+  harness (tool budget, planner/verifier, strategy memory) and its meta-loop, kept
+  intact. It is the planned consumer of this pipeline as its search tool (see the
+  roadmap in docs/USE_CASES.md).

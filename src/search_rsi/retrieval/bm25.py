@@ -1,58 +1,65 @@
 from __future__ import annotations
 
+import heapq
 import math
-import re
-from collections import Counter
+from collections import Counter, defaultdict
+from typing import Callable
 
+from search_rsi.text import tokenize  # re-exported: older modules import it from here
 from search_rsi.types import Document
 
-_TOKEN_RE = re.compile(r"[a-z0-9]+")
-
-
-def tokenize(text: str) -> list[str]:
-    return _TOKEN_RE.findall(text.lower())
+__all__ = ["BM25Index", "tokenize"]
 
 
 class BM25Index:
     """A small, dependency-free BM25 index over real documents.
 
     No external services, no stubbed scores: term statistics are computed from the
-    actual committed corpus text (plan.md C2).
+    actual committed corpus text (plan.md C2). Postings are inverted so a query only
+    touches documents that share a term with it; `k1`/`b` are applied at query time,
+    so one built index serves every hyperparameter setting the optimizer tries.
     """
 
-    def __init__(self, documents: list[Document], k1: float = 1.5, b: float = 0.75):
+    def __init__(
+        self,
+        documents: list[Document],
+        k1: float = 1.5,
+        b: float = 0.75,
+        analyzer: Callable[[str], list[str]] = tokenize,
+        texts: list[str] | None = None,
+    ):
         self.k1 = k1
         self.b = b
         self.documents = documents
-        self._doc_tokens = [tokenize(d.text) for d in documents]
-        self._doc_len = [len(toks) for toks in self._doc_tokens]
-        self._avgdl = sum(self._doc_len) / len(self._doc_len) if self._doc_len else 0.0
-        self._term_freqs = [Counter(toks) for toks in self._doc_tokens]
-        self._df: Counter[str] = Counter()
-        for tf in self._term_freqs:
-            for term in tf:
-                self._df[term] += 1
+        self.analyzer = analyzer
+        texts = texts if texts is not None else [d.text for d in documents]
+        doc_tokens = [analyzer(t) for t in texts]
+        self._doc_len = [len(toks) for toks in doc_tokens]
+        self._avgdl = (sum(self._doc_len) / len(self._doc_len)) if self._doc_len else 0.0
+        self._postings: dict[str, list[tuple[int, int]]] = defaultdict(list)
+        for i, toks in enumerate(doc_tokens):
+            for term, freq in Counter(toks).items():
+                self._postings[term].append((i, freq))
         n = len(documents)
-        self._idf = {
-            term: math.log((n - df + 0.5) / (df + 0.5) + 1.0)
-            for term, df in self._df.items()
+        self.idf = {
+            term: math.log((n - len(p) + 0.5) / (len(p) + 0.5) + 1.0)
+            for term, p in self._postings.items()
         }
 
-    def search(self, query: str, top_k: int = 5) -> list[tuple[str, float]]:
-        q_terms = tokenize(query)
-        scores: list[tuple[str, float]] = []
-        for i, doc in enumerate(self.documents):
-            tf = self._term_freqs[i]
-            dl = self._doc_len[i]
-            score = 0.0
-            for term in q_terms:
-                if term not in tf:
-                    continue
-                idf = self._idf.get(term, 0.0)
-                freq = tf[term]
-                denom = freq + self.k1 * (1 - self.b + self.b * dl / (self._avgdl or 1.0))
-                score += idf * (freq * (self.k1 + 1)) / (denom or 1.0)
-            if score > 0:
-                scores.append((doc.doc_id, score))
-        scores.sort(key=lambda x: x[1], reverse=True)
-        return scores[:top_k]
+    def search(
+        self, query: str, top_k: int = 5, k1: float | None = None, b: float | None = None
+    ) -> list[tuple[str, float]]:
+        k1 = self.k1 if k1 is None else k1
+        b = self.b if b is None else b
+        avgdl = self._avgdl or 1.0
+        scores: dict[int, float] = defaultdict(float)
+        for term in self.analyzer(query):
+            postings = self._postings.get(term)
+            if not postings:
+                continue
+            idf = self.idf[term]
+            for i, freq in postings:
+                denom = freq + k1 * (1 - b + b * self._doc_len[i] / avgdl)
+                scores[i] += idf * (freq * (k1 + 1)) / (denom or 1.0)
+        best = heapq.nsmallest(top_k, scores.items(), key=lambda kv: (-kv[1], kv[0]))
+        return [(self.documents[i].doc_id, s) for i, s in best if s > 0]
